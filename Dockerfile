@@ -39,3 +39,4 @@ EXPOSE 8080
 
 # コンテナ起動時にアプリケーションを実行するコマンド
 ENTRYPOINT ["java", "-jar", "app.jar"]
+

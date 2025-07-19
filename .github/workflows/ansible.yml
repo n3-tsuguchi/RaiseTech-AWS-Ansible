@@ -27,7 +27,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: tsuguchi1/raise-tech:latest
+          tags: tsuguchi1/raise-tech-spring:latest
 
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.9.0
@@ -46,4 +46,5 @@ jobs:
             [all:vars]
             ansible_user=ec2-user
             ansible_python_interpreter=/usr/bin/python3
-            docker_image_name=tsuguchi1/raise-tech
+            docker_image_name=tsuguchi1/raise-tech-spring
+
