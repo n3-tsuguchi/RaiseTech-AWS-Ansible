@@ -1,0 +1,33 @@
+- hosts: all
+  become: yes
+
+  vars:
+    docker_image_name: "tsuguchi1/raise-tech"
+
+  tasks:
+    - name: Ensure Docker Engine is installed
+      ansible.builtin.dnf:
+        name: docker
+        state: present
+        update_cache: yes
+
+    - name: Ensure Docker service is started and enabled
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add ec2-user to the docker group
+      ansible.builtin.user:
+        name: ec2-user
+        groups: docker
+        append: yes
+
+    - name: Pull the latest image and run the Spring Boot container
+      community.docker.docker_container:
+        name: springboot-app
+        image: "{{ docker_image_name }}:latest"
+        state: started
+        pull: yes
+        ports:
+          - "8080:8080"
