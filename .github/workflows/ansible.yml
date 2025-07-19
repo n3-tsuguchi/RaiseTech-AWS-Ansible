@@ -38,4 +38,4 @@ jobs:
       - name: Run Ansible Playbook
         env:
           ANSIBLE_HOST_KEY_CHECKING: "False"
-        run: ansible-playbook RaiseTech-Ansible/ansible/playbook.yml -i RaiseTech-Ansible/ansible/inventory.ini
+        run: ansible-playbook ansible/playbook.yml -i ansible/inventory.ini
