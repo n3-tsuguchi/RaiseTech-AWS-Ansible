@@ -16,26 +16,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: tsuguchi1/raise-tech:latest
+
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Create inventory file
-        run: |
-          echo "[al2023]" > inventory
-          echo "${{ secrets.HOST }} ansible_user=${{ secrets.SSH_USER }}" >> inventory
+      - name: Run Ansible Playbook for Docker deployment
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          playbook: playbook.yml
+          key: ${{ secrets.ANSIBLE_SSH_PRIVATE_KEY }}
+          inventory: |
+            [all]
+            ${{ secrets.ANSIBLE_HOST }}
 
-      - name: Create vars file
-        run: |
-          echo "mysql_root_password: ${{ secrets.MYSQL_ROOT_PASSWORD }}" > vars.yml
-
-      - name: Setup Ansible
-        run: |
-          python3 -m pip install --user ansible
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Run Ansible Playbook
-        env:
-          ANSIBLE_HOST_KEY_CHECKING: "False"
-        run: ansible-playbook ansible/playbook.yml -i ansible/inventory.ini
+            [all:vars]
+            ansible_user=ec2-user
+            ansible_python_interpreter=/usr/bin/python3
+            docker_image_name=tsuguchi1/raise-tech
