@@ -1,0 +1,41 @@
+name: 'Deploy Spring Boot App with Ansible'
+
+on:
+  push:
+    branches:
+      - main
+      - ansible
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy with Ansible
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Create inventory file
+        run: |
+          echo "[al2023]" > inventory
+          echo "${{ secrets.HOST }} ansible_user=${{ secrets.SSH_USER }}" >> inventory
+
+      - name: Create vars file
+        run: |
+          echo "mysql_root_password: ${{ secrets.MYSQL_ROOT_PASSWORD }}" > vars.yml
+
+      - name: Setup Ansible
+        run: |
+          python3 -m pip install --user ansible
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Run Ansible Playbook
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: "False"
+        run: ansible-playbook RaiseTech-Ansible/ansible/playbook.yml -i RaiseTech-Ansible/ansible/inventory.ini
