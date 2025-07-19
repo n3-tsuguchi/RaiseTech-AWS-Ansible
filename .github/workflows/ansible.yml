@@ -5,11 +5,6 @@ on:
     branches:
       - main
       - ansible
-
-  pull_request:
-    branches:
-      - main
-      - ansible
   workflow_dispatch:
 
 jobs:
@@ -52,3 +47,4 @@ jobs:
             ansible_user=ec2-user
             ansible_python_interpreter=/usr/bin/python3
             docker_image_name=tsuguchi1/raise-tech-spring
+

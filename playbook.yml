@@ -4,6 +4,7 @@
   vars:
     docker_image_name: "tsuguchi1/raise-tech-spring"
 
+
   tasks:
     - name: Ensure Docker Engine is installed
       ansible.builtin.dnf:
